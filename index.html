@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="ytl">
+    <meta name="copyright" content="ytl">
+    <title>每五分鐘抓取位置寫入檔案</title>
+</head>
+
+<body>
+    <div id="pos">1</div>
+    <script>
+        var map, marker, lat, lng;
+        function success(pos) {
+            console.log("3");
+            document.getElementById("pos").innerHTML = pos.coords.latitude;
+        }
+        async function initMap() {
+            lr = 0;
+            var url = "https://script.google.com/macros/s/AKfycbzEQSvbn-n5sJMTaXXo4tzrR1mn3nTGkeMUheXiHM6Wxrhki8wBLSowV53ittcJrKXF/exec";
+            var pos = "2";
+            console.log(document.getElementById("pos").innerHTML);
+            navigator.geolocation.getCurrentPosition(success);
+            console.log(pos);
+            while (true) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    lr++;
+                    console.log(position.coords.latitude, position.coords.longitude, lr);
+                    fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ "lat": position.coords.latitude, "lng": position.coords.longitude }),
+                    //}).then(response => alert(JSON.stringify(response)));
+                    }).then(response => console.log(JSON.stringify(response)))
+                });
+                await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+            }
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuoFMBv84IDpHB08mMIsSP0v3rCAN2mTI&callback=initMap"
+        async defer></script>
+</body>
+
+</html>
